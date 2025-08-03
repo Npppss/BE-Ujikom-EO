@@ -1,0 +1,15 @@
+fastapi
+sqlalchemy>=2.0
+asyncpg
+pydantic-settings
+uvicorn
+psycopg2-binary
+python-dotenv
+passlib[bcrypt]
+python-jose[cryptography]
+pydantic[email]
+python-multipart
+emails
+qrcode[pil]
+Pillow
+python-multipart

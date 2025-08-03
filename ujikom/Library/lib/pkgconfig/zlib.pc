@@ -1,0 +1,13 @@
+prefix=D:/event_organizer_backend/ujikom/Library
+exec_prefix=D:/event_organizer_backend/ujikom/Library
+libdir=D:/event_organizer_backend/ujikom/Library/lib
+sharedlibdir=D:/event_organizer_backend/ujikom/Library/lib
+includedir=D:/event_organizer_backend/ujikom/Library/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.13
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}
