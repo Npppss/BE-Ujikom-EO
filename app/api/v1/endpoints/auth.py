@@ -4,10 +4,11 @@ from app.db.database import get_db
 from app.schemas.auth import (
     UserCreate, UserLogin, Token, UserOut, RefreshTokenRequest,
     ForgotPasswordRequest, ResetPasswordRequest, ChangePasswordRequest,
-    EmailVerificationRequest, ResendVerificationRequest
+    EmailVerificationRequest, ResendVerificationRequest, PasswordRequirementsResponse
 )
 from app.services.auth_service import auth_service
 from app.core.dependencies import get_current_active_user
+from app.core.password_validator import password_validator
 from app.db.models import User
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -150,3 +151,29 @@ def get_current_user_info(current_user: User = Depends(get_current_active_user))
         is_verified=current_user.is_verified,
         created_at=current_user.created_at
     )
+
+@router.get("/password-requirements", response_model=PasswordRequirementsResponse)
+def get_password_requirements():
+    """Get password requirements for frontend validation"""
+    requirements = password_validator.get_password_requirements()
+    return PasswordRequirementsResponse(**requirements)
+
+from pydantic import BaseModel
+
+class PasswordValidationRequest(BaseModel):
+    password: str
+
+@router.post("/validate-password")
+def validate_password(request: PasswordValidationRequest):
+    """Validate password strength (for frontend real-time validation)"""
+    is_valid, errors = password_validator.validate_password(request.password)
+    strength = password_validator.get_password_strength(request.password)
+    is_common = password_validator.is_common_password(request.password)
+    
+    return {
+        "is_valid": is_valid,
+        "errors": errors,
+        "strength": strength,
+        "is_common_password": is_common,
+        "requirements": password_validator.get_password_requirements()
+    }

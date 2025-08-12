@@ -1,6 +1,6 @@
 # 🎪 Event Organizer Backend API
 
-A comprehensive **FastAPI** backend system for event management with advanced features including authentication, QR code attendance, certificate management, and analytics.
+A comprehensive **FastAPI** backend system for event management with advanced features including authentication, QR code attendance, certificate management, analytics, data export, and strong password validation.
 
 ## 🚀 Features
 
@@ -10,6 +10,9 @@ A comprehensive **FastAPI** backend system for event management with advanced fe
 - **Email verification** after registration
 - **Password reset** functionality
 - **Forgot password** with email recovery
+- **Strong password validation** with regex patterns
+- **Real-time password strength checking**
+- **Common password detection**
 
 ### 📅 **Event Management**
 - **Complete CRUD operations** for events
@@ -37,6 +40,24 @@ A comprehensive **FastAPI** backend system for event management with advanced fe
 - **Attendance analytics**
 - **Revenue tracking**
 - **User engagement statistics**
+- **Data export to Excel/CSV** formats
+- **Comprehensive reporting system**
+
+### 📤 **Data Export System**
+- **Export event statistics** to Excel/CSV
+- **Export participant data** with detailed information
+- **Export certificate data** for verification
+- **Real-time data processing** and file generation
+- **Auto-formatted Excel files** with proper styling
+- **Streaming file downloads** for large datasets
+
+### 🔒 **Password Security**
+- **Regex-based password validation** with 5 criteria
+- **Real-time password strength checking**
+- **Common password detection** (40+ weak passwords)
+- **Password strength levels** (weak, medium, strong, very strong)
+- **Frontend integration** with validation API
+- **Automatic validation** on registration and password changes
 
 ## 🛠️ Technology Stack
 
@@ -49,6 +70,8 @@ A comprehensive **FastAPI** backend system for event management with advanced fe
 - **QR Codes**: qrcode[pil] with Pillow
 - **Validation**: Pydantic
 - **Documentation**: Auto-generated OpenAPI/Swagger
+- **Data Export**: pandas, openpyxl
+- **Password Validation**: regex patterns
 
 ## 📋 Prerequisites
 
@@ -88,7 +111,7 @@ Create a `.env` file in the root directory:
 # Database Configuration
 DATABASE_URL=postgresql://username:password@localhost:5432/event_organizer_db
 
-# Security
+# Security                                                          
 SECRET_KEY=your-secret-key-here
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
@@ -154,6 +177,8 @@ POST /auth/reset-password   # Reset password
 POST /auth/verify-email     # Verify email address
 POST /auth/resend-verification # Resend verification email
 GET  /auth/me               # Get current user info
+GET  /auth/password-requirements # Get password requirements
+POST /auth/validate-password    # Validate password strength
 ```
 
 ### 👥 **User Management**
@@ -220,6 +245,17 @@ GET    /certificates/stats/overview             # Certificate statistics
 GET    /certificates/my-certificates            # User's certificates
 ```
 
+### 📊 **Data Export**
+```
+GET    /export/statistics/excel                 # Export event statistics to Excel
+GET    /export/statistics/csv                   # Export event statistics to CSV
+GET    /export/participants/excel               # Export participant data to Excel
+GET    /export/participants/csv                 # Export participant data to CSV
+GET    /export/certificates/excel               # Export certificate data to Excel
+GET    /export/certificates/csv                 # Export certificate data to CSV
+```
+```
+
 ## 🗄️ Database Schema
 
 ### **Core Tables**
@@ -255,11 +291,13 @@ event_organizer_backend/
 │   │           ├── user.py
 │   │           ├── event.py
 │   │           ├── attendance.py
-│   │           └── certificate.py
+│   │           ├── certificate.py
+│   │           └── export.py
 │   ├── core/
 │   │   ├── config.py
 │   │   ├── security.py
-│   │   └── dependencies.py
+│   │   ├── dependencies.py
+│   │   └── password_validator.py
 │   ├── db/
 │   │   ├── database.py
 │   │   ├── init_db.py
@@ -278,13 +316,19 @@ event_organizer_backend/
 │   │   ├── attendance_service.py
 │   │   ├── certificate_service.py
 │   │   ├── email_service.py
-│   │   └── qr_service.py
+│   │   ├── qr_service.py
+│   │   └── export_service.py
 │   └── main.py
 ├── uploads/
 ├── requirements.txt
 ├── reset_db.py
 ├── generate_secret.py
-└── README.md
+├── README.md
+├── README_EXPORT.md
+├── README_PASSWORD_VALIDATION.md
+└── examples/
+    ├── export_example.py
+    └── password_validation_test.py
 ```
 
 ### **Running Tests**
@@ -305,9 +349,26 @@ alembic revision --autogenerate -m "Description"
 alembic upgrade head
 ```
 
-## 🚀 Deployment
+## 📚 Additional Documentation
 
-### **Production Setup**
+### **Data Export System**
+- [README_EXPORT.md](README_EXPORT.md) - Complete guide for data export features
+- Export event statistics, participant data, and certificates
+- Support for Excel (.xlsx) and CSV formats
+- Real-time data processing and file generation
+
+### **Password Validation System**
+- [README_PASSWORD_VALIDATION.md](README_PASSWORD_VALIDATION.md) - Comprehensive password validation guide
+- Regex-based password strength validation
+- Real-time password strength checking
+- Common password detection
+- Frontend integration examples
+
+### **Testing Examples**
+- [examples/export_example.py](examples/export_example.py) - Data export testing script
+- [examples/password_validation_test.py](examples/password_validation_test.py) - Password validation testing script
+
+## 🚀 Deployment
 1. Set `ENVIRONMENT=production` in `.env`
 2. Use production database (PostgreSQL)
 3. Configure proper SMTP settings
@@ -350,6 +411,8 @@ If you encounter any issues or have questions:
 
 ## 🎯 Roadmap
 
+- [x] **Data Export System** ✅
+- [x] **Password Validation** ✅
 - [ ] **Ticket Management System**
 - [ ] **Payment Gateway Integration**
 - [ ] **Push Notification System**

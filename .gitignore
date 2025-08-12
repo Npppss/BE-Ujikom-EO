@@ -9,8 +9,32 @@ __pycache__/
 .venv/
 venv/
 env/
+ujikom/
 *.log
 
 # OS
 .DS_Store
 Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Database
+*.db
+*.sqlite
+
+# Logs
+logs/
+*.log
+
+# Uploads (keep directory but ignore files)
+uploads/*
+!uploads/.gitkeep
+
+# Certificates
+*.pem
+*.key
+*.crt

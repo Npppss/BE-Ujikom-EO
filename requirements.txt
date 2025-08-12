@@ -12,4 +12,5 @@ python-multipart
 emails
 qrcode[pil]
 Pillow
-python-multipart
+pandas
+openpyxl
