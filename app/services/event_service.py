@@ -12,6 +12,17 @@ class EventService:
     
     def create_event(self, db: Session, event_data: EventCreate, organizer_id: int) -> Event:
         """Create a new event"""
+        # Validasi H-3: Event hanya dapat dibuat maksimal H-3 dari tanggal penyelenggaraan
+        event_start_date = event_data.start_date
+        current_date = datetime.now().date()
+        min_creation_date = event_start_date - timedelta(days=3)
+        
+        if current_date > min_creation_date:
+            raise Exception(f"Event hanya dapat dibuat maksimal H-3 dari tanggal penyelenggaraan. "
+                          f"Tanggal event: {event_start_date}, "
+                          f"Batas pembuatan: {min_creation_date}, "
+                          f"Tanggal hari ini: {current_date}")
+        
         # Convert gallery_urls to JSON string if provided
         gallery_urls_json = None
         if event_data.gallery_urls:
@@ -25,7 +36,7 @@ class EventService:
         event = Event(
             **event_dict,
             organizer_id=organizer_id,
-            status=EventStatus.DRAFT
+            status=EventStatus.PUBLISHED  # Auto publish jika validasi H-3 berhasil
         )
         
         db.add(event)
@@ -107,6 +118,17 @@ class EventService:
         if not event:
             return None
         
+        # Validasi H-3: Jika mengubah tanggal event, harus tetap memenuhi syarat H-3
+        if event_data.start_date:
+            new_start_date = event_data.start_date
+            current_date = datetime.now().date()
+            min_creation_date = new_start_date - timedelta(days=3)
+            
+            if current_date > min_creation_date:
+                raise Exception(f"Tanggal event tidak dapat diubah ke {new_start_date} karena melanggar aturan H-3. "
+                              f"Batas pembuatan: {min_creation_date}, "
+                              f"Tanggal hari ini: {current_date}")
+        
         # Convert gallery_urls to JSON string if provided
         update_data = event_data.dict(exclude_unset=True)
         if 'gallery_urls' in update_data and update_data['gallery_urls']:
@@ -147,6 +169,16 @@ class EventService:
         
         if not event:
             return None
+        
+        # Validasi H-3: Event hanya dapat dipublish jika memenuhi syarat H-3
+        current_date = datetime.now().date()
+        min_creation_date = event.start_date - timedelta(days=3)
+        
+        if current_date > min_creation_date:
+            raise Exception(f"Event tidak dapat dipublish karena melanggar aturan H-3. "
+                          f"Tanggal event: {event.start_date}, "
+                          f"Batas pembuatan: {min_creation_date}, "
+                          f"Tanggal hari ini: {current_date}")
         
         event.status = EventStatus.PUBLISHED
         event.published_at = datetime.utcnow()
@@ -218,6 +250,13 @@ class EventService:
         
         if not event:
             return None
+        
+        # Validasi waktu pendaftaran: Pendaftaran maksimal H-0 (hari H) dan sebelum jam event dimulai
+        current_datetime = datetime.now()
+        event_datetime = datetime.combine(event.start_date, event.start_time)
+        
+        if current_datetime >= event_datetime:
+            raise Exception(f"Pendaftaran sudah ditutup. Event dimulai pada {event_datetime.strftime('%d/%m/%Y %H:%M')}")
         
         # Check if already registered
         existing_registration = db.query(EventRegistration).filter(

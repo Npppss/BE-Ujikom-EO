@@ -117,10 +117,11 @@ class AuthService:
         return user
 
     def login_user(self, db: Session, user: User) -> dict:
-        """Login user and return tokens"""
-        # Create access token
+        """Login user and return tokens with role-based session timeout"""
+        # Create access token with role-based expiration
         access_token = create_access_token(
-            data={"sub": user.email, "role": user.role.name, "user_id": user.id}
+            data={"sub": user.email, "role": user.role.name, "user_id": user.id},
+            role=user.role.name
         )
         
         # Create refresh token
@@ -137,11 +138,17 @@ class AuthService:
         db.add(refresh_token_db)
         db.commit()
         
+        # Get session timeout based on role
+        from app.core.security import get_token_expiration_minutes
+        session_timeout_minutes = get_token_expiration_minutes(user.role.name)
+        
         return {
             "access_token": access_token,
             "refresh_token": refresh_token,
             "token_type": "bearer",
-            "expires_in": ACCESS_TOKEN_EXPIRE_MINUTES * 60
+            "expires_in": session_timeout_minutes * 60,  # Convert to seconds
+            "session_timeout_minutes": session_timeout_minutes,
+            "role": user.role.name
         }
 
     def refresh_access_token(self, db: Session, refresh_token: str) -> dict:

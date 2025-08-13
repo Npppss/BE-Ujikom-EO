@@ -9,6 +9,10 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30, alias="ACCESS_TOKEN_EXPIRE_MINUTES")  # 30 menit
     REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=7, alias="REFRESH_TOKEN_EXPIRE_DAYS")  # 7 hari
     
+    # Session timeout configuration for different roles
+    ADMIN_SESSION_TIMEOUT_MINUTES: int = Field(default=5, alias="ADMIN_SESSION_TIMEOUT_MINUTES")  # 5 menit untuk admin dan user management
+    USER_SESSION_TIMEOUT_MINUTES: int = Field(default=10, alias="USER_SESSION_TIMEOUT_MINUTES")  # 10 menit untuk user biasa
+    
     # Email settings for forgot password
     SMTP_SERVER: str = Field(default="smtp.gmail.com", alias="SMTP_SERVER")
     SMTP_PORT: int = Field(default=587, alias="SMTP_PORT")
@@ -16,7 +20,7 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = Field(default="", alias="SMTP_PASSWORD")
     FROM_EMAIL: str = Field(default="", alias="FROM_EMAIL")
     
-    # Frontend URL for password reset
+    # Frontend URL for password reset links
     FRONTEND_URL: str = Field(default="http://localhost:3000", alias="FRONTEND_URL")
 
     class Config:
@@ -31,3 +35,5 @@ SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 REFRESH_TOKEN_EXPIRE_DAYS = settings.REFRESH_TOKEN_EXPIRE_DAYS
+ADMIN_SESSION_TIMEOUT_MINUTES = settings.ADMIN_SESSION_TIMEOUT_MINUTES
+USER_SESSION_TIMEOUT_MINUTES = settings.USER_SESSION_TIMEOUT_MINUTES

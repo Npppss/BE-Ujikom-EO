@@ -1,121 +1,162 @@
-# 🎪 Event Organizer Backend API
+# Event Organizer Backend
 
-A comprehensive **FastAPI** backend system for event management with advanced features including authentication, QR code attendance, certificate management, analytics, data export, and strong password validation.
+Backend API untuk sistem manajemen event dan sertifikat dengan fitur lengkap autentikasi, manajemen user, tracking kehadiran, dan export data.
 
-## 🚀 Features
+## Fitur Utama
 
-### 🔐 **Authentication & Authorization**
-- **JWT-based authentication** with access & refresh tokens
-- **Role-Based Access Control (RBAC)** - Admin, Organizer, User roles
-- **Email verification** after registration
-- **Password reset** functionality
-- **Forgot password** with email recovery
-- **Strong password validation** with regex patterns
-- **Real-time password strength checking**
-- **Common password detection**
+### 🔐 Authentication & Authorization
+- **JWT-based authentication** dengan access dan refresh token
+- **Role-based access control (RBAC)** dengan roles: admin, organizer, user
+- **Email verification** dengan token OTP
+- **Password reset** dengan email verification
+- **Password strength validation** menggunakan regex
+- **Session timeout** dengan durasi berbeda berdasarkan role:
+  - Admin dan User Management: 5 menit
+  - User biasa: 10 menit
 
-### 📅 **Event Management**
-- **Complete CRUD operations** for events
-- **Event categories** (Business, Entertainment, Education, Technology, Health, Sports, Culture)
-- **Event status** management (Draft, Published, Ongoing, Completed, Cancelled)
-- **Rich event details** (location, pricing, capacity, media uploads)
-- **Event analytics** and statistics
-- **Featured events** and upcoming events lists
+### 📊 Event Management
+- **CRUD operations** untuk event dengan validasi waktu
+- **Event registration** dengan validasi H-0 (maksimal sampai event dimulai)
+- **Event creation** dengan validasi H-3 (maksimal 3 hari sebelum event)
+- **Event categories** dan status management
+- **Event search** dan filtering
 
-### 📱 **QR Code Attendance System**
-- **Check-in/Check-out QR codes** for events
-- **Real-time attendance tracking**
-- **Attendance analytics** and reports
-- **Universal QR scanner** endpoint
+### 👥 User Management
+- **User registration** dengan verifikasi email
+- **User roles** dan permissions management
+- **User profile** management
+- **Session management** dengan auto logout
 
-### 🎫 **Certificate Management**
-- **Certificate generation** with custom templates
-- **Bulk certificate creation** for all event participants
-- **Certificate verification** system with unique codes
-- **Template management** with file upload support
-- **Certificate analytics** and statistics
+### 📈 Attendance Tracking
+- **QR code generation** untuk check-in/check-out
+- **Attendance validation** dengan waktu event
+- **Attendance history** dan reporting
+- **Real-time attendance** status
 
-### 📊 **Advanced Analytics**
-- **Event performance metrics**
-- **Attendance analytics**
-- **Revenue tracking**
-- **User engagement statistics**
-- **Data export to Excel/CSV** formats
-- **Comprehensive reporting system**
+### 🏆 Certificate Management
+- **Certificate generation** otomatis
+- **Certificate templates** customization
+- **Certificate verification** system
+- **Certificate export** functionality
 
-### 📤 **Data Export System**
-- **Export event statistics** to Excel/CSV
-- **Export participant data** with detailed information
-- **Export certificate data** for verification
-- **Real-time data processing** and file generation
-- **Auto-formatted Excel files** with proper styling
-- **Streaming file downloads** for large datasets
+### 📤 Data Export
+- **Excel export** (.xlsx) untuk semua data
+- **CSV export** untuk data analysis
+- **Event statistics** export
+- **Participant data** export
+- **Certificate data** export
 
-### 🔒 **Password Security**
-- **Regex-based password validation** with 5 criteria
-- **Real-time password strength checking**
-- **Common password detection** (40+ weak passwords)
-- **Password strength levels** (weak, medium, strong, very strong)
-- **Frontend integration** with validation API
-- **Automatic validation** on registration and password changes
+## Teknologi yang Digunakan
 
-## 🛠️ Technology Stack
+- **FastAPI** - Modern, fast web framework
+- **PostgreSQL** - Relational database
+- **SQLAlchemy** - ORM untuk database
+- **Pydantic** - Data validation dan serialization
+- **JWT** - JSON Web Tokens untuk authentication
+- **Pandas** - Data manipulation dan export
+- **OpenPyXL** - Excel file generation
+- **Bcrypt** - Password hashing
+- **Python-dotenv** - Environment configuration
 
-- **Framework**: FastAPI
-- **Database**: PostgreSQL
-- **ORM**: SQLAlchemy 2.0
-- **Authentication**: JWT (python-jose)
-- **Password Hashing**: bcrypt
-- **Email**: SMTP with python-multipart
-- **QR Codes**: qrcode[pil] with Pillow
-- **Validation**: Pydantic
-- **Documentation**: Auto-generated OpenAPI/Swagger
-- **Data Export**: pandas, openpyxl
-- **Password Validation**: regex patterns
+## Struktur File
 
-## 📋 Prerequisites
-
-- Python 3.8+
-- PostgreSQL 12+
-- pip (Python package manager)
-
-## 🚀 Quick Start
-
-### 1. **Clone Repository**
-```bash
-git clone https://github.com/Npppss/BE-Ujikom-EO.git
-cd BE-Ujikom-EO
+```
+event_organizer_backend/
+├── app/
+│   ├── api/v1/endpoints/     # API endpoints
+│   ├── core/                 # Core configuration
+│   ├── db/                   # Database models dan connection
+│   ├── middleware/           # Custom middleware
+│   ├── services/             # Business logic
+│   ├── utils/                # Utility functions
+│   └── main.py              # FastAPI application
+├── examples/                 # Test scripts dan examples
+├── requirements.txt          # Python dependencies
+├── README.md                 # Main documentation
+├── README_EXPORT.md          # Export feature documentation
+├── README_PASSWORD_VALIDATION.md  # Password validation docs
+├── README_TIME_VALIDATION.md      # Time validation docs
+├── README_SESSION_TIMEOUT.md      # Session timeout docs
+└── .gitignore               # Git ignore patterns
 ```
 
-### 2. **Setup Virtual Environment**
-```bash
-# Create virtual environment
-python -m venv ujikom
+## API Endpoints
 
-# Activate virtual environment
-# Windows:
-ujikom\Scripts\activate
-# Linux/Mac:
-source ujikom/bin/activate
+### Authentication
+- `POST /api/v1/auth/register` - User registration
+- `POST /api/v1/auth/login` - User login
+- `POST /api/v1/auth/refresh` - Refresh access token
+- `POST /api/v1/auth/logout` - User logout
+- `POST /api/v1/auth/forgot-password` - Forgot password
+- `POST /api/v1/auth/reset-password` - Reset password
+- `POST /api/v1/auth/change-password` - Change password
+- `POST /api/v1/auth/verify-email` - Email verification
+- `GET /api/v1/auth/session-status` - Check session status
+- `GET /api/v1/auth/password-requirements` - Get password requirements
+- `POST /api/v1/auth/validate-password` - Validate password strength
+
+### User Management
+- `GET /api/v1/users/` - Get all users (admin only)
+- `GET /api/v1/users/{user_id}` - Get user by ID
+- `PUT /api/v1/users/{user_id}` - Update user
+- `DELETE /api/v1/users/{user_id}` - Delete user (admin only)
+
+### Event Management
+- `GET /api/v1/events/` - Get all events
+- `POST /api/v1/events/` - Create new event
+- `GET /api/v1/events/{event_id}` - Get event by ID
+- `PUT /api/v1/events/{event_id}` - Update event
+- `DELETE /api/v1/events/{event_id}` - Delete event
+- `POST /api/v1/events/{event_id}/publish` - Publish event
+- `POST /api/v1/events/{event_id}/register` - Register for event
+
+### Attendance
+- `POST /api/v1/attendance/check-in` - Check-in attendance
+- `POST /api/v1/attendance/check-out` - Check-out attendance
+- `GET /api/v1/attendance/event/{event_id}` - Get event attendance
+
+### Certificates
+- `GET /api/v1/certificates/` - Get all certificates
+- `GET /api/v1/certificates/{certificate_id}` - Get certificate by ID
+- `POST /api/v1/certificates/generate` - Generate certificate
+
+### Data Export
+- `GET /api/v1/export/statistics/excel` - Export statistics to Excel
+- `GET /api/v1/export/statistics/csv` - Export statistics to CSV
+- `GET /api/v1/export/participants/excel` - Export participants to Excel
+- `GET /api/v1/export/participants/csv` - Export participants to CSV
+- `GET /api/v1/export/certificates/excel` - Export certificates to Excel
+- `GET /api/v1/export/certificates/csv` - Export certificates to CSV
+
+## Setup dan Instalasi
+
+### 1. Clone Repository
+```bash
+git clone <repository-url>
+cd event_organizer_backend
 ```
 
-### 3. **Install Dependencies**
+### 2. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. **Environment Configuration**
-Create a `.env` file in the root directory:
+### 3. Environment Configuration
+Buat file `.env` dengan konfigurasi berikut:
 
 ```env
 # Database Configuration
-DATABASE_URL=postgresql://username:password@localhost:5432/event_organizer_db
+DATABASE_URL=postgresql://username:password@localhost:5432/event_organizer
 
-# Security                                                          
-SECRET_KEY=your-secret-key-here
+# Security Configuration
+SECRET_KEY=your-secret-key-here-make-it-long-and-random
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 REFRESH_TOKEN_EXPIRE_DAYS=7
+
+# Session timeout configuration
+ADMIN_SESSION_TIMEOUT_MINUTES=5      # 5 menit untuk admin dan user management
+USER_SESSION_TIMEOUT_MINUTES=10      # 10 menit untuk user biasa
 
 # Email Configuration
 SMTP_SERVER=smtp.gmail.com
@@ -124,308 +165,114 @@ SMTP_USERNAME=your-email@gmail.com
 SMTP_PASSWORD=your-app-password
 FROM_EMAIL=your-email@gmail.com
 
-# Frontend URL (for email links)
+# Frontend URL
 FRONTEND_URL=http://localhost:3000
 ```
 
-### 5. **Database Setup**
+### 4. Database Setup
 ```bash
-# Reset database (if needed)
-python reset_db.py
+# Buat database PostgreSQL
+createdb event_organizer
 
-# Initialize database with default data
+# Jalankan migrasi (jika ada)
 python -m app.db.init_db
 ```
 
-### 6. **Run Application**
+### 5. Run Application
 ```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload
 ```
 
-## 📚 API Documentation
+Aplikasi akan berjalan di `http://localhost:8000`
 
-Once the server is running, you can access:
+## Fitur Session Timeout
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-- **OpenAPI JSON**: http://localhost:8000/openapi.json
+Sistem menerapkan session timeout yang berbeda berdasarkan role user:
 
-## 🔑 Default Credentials
+### ⏰ Timeout Durations
+- **Admin & Organizer**: 5 menit (untuk keamanan tinggi)
+- **User Biasa**: 10 menit (untuk user experience)
 
-After running `init_db.py`, these default users are created:
+### 🔒 Security Features
+- **Automatic validation** setiap request
+- **Auto logout** ketika session expired
+- **Response headers** dengan informasi session
+- **Session status endpoint** untuk monitoring
 
-### **Admin User**
-- **Email**: `admin@eventorganizer.com`
-- **Password**: `admin123`
-- **Role**: Admin (full access)
+### 📱 Frontend Integration
+- **JavaScript timers** untuk countdown
+- **Auto redirect** ke login page
+- **Session warning** sebelum expired
+- **Real-time status** checking
 
-### **Organizer User**
-- **Email**: `organizer@eventorganizer.com`
-- **Password**: `organizer123`
-- **Role**: Organizer (event management)
+## Testing
 
-## 📖 API Endpoints
-
-### 🔐 **Authentication**
-```
-POST /auth/register          # Register new user
-POST /auth/login            # Login user
-POST /auth/refresh          # Refresh access token
-POST /auth/logout           # Logout user
-POST /auth/forgot-password  # Request password reset
-POST /auth/reset-password   # Reset password
-POST /auth/verify-email     # Verify email address
-POST /auth/resend-verification # Resend verification email
-GET  /auth/me               # Get current user info
-GET  /auth/password-requirements # Get password requirements
-POST /auth/validate-password    # Validate password strength
-```
-
-### 👥 **User Management**
-```
-GET    /users/              # Get all users (admin only)
-GET    /users/{user_id}     # Get user by ID
-PUT    /users/{user_id}     # Update user
-DELETE /users/{user_id}     # Delete user
-GET    /users/roles/        # Get all roles
-POST   /users/roles/        # Create role
-PUT    /users/roles/{id}    # Update role
-DELETE /users/roles/{id}    # Delete role
-```
-
-### 📅 **Event Management**
-```
-POST   /events/                    # Create event
-GET    /events/                    # Get all events (with filters)
-GET    /events/{event_id}          # Get event by ID
-PUT    /events/{event_id}          # Update event
-DELETE /events/{event_id}          # Delete event
-POST   /events/{event_id}/publish  # Publish event
-POST   /events/{event_id}/like     # Like event
-DELETE /events/{event_id}/like     # Unlike event
-POST   /events/{event_id}/register # Register for event
-GET    /events/analytics/stats     # Global event statistics
-GET    /events/featured/list       # Featured events
-GET    /events/upcoming/list       # Upcoming events
-```
-
-### 📱 **Attendance System**
-```
-POST   /attendance/{event_id}/start-check-in    # Start check-in
-POST   /attendance/{event_id}/stop-check-in     # Stop check-in
-POST   /attendance/{event_id}/start-check-out   # Start check-out
-POST   /attendance/{event_id}/stop-check-out    # Stop check-out
-GET    /attendance/{event_id}/check-in-qr       # Get check-in QR
-GET    /attendance/{event_id}/check-out-qr      # Get check-out QR
-POST   /attendance/scan-check-in                # Scan check-in QR
-POST   /attendance/scan-check-out               # Scan check-out QR
-POST   /attendance/scan-qr                      # Universal QR scanner
-GET    /attendance/{event_id}/list              # Get event attendance
-GET    /attendance/{event_id}/summary           # Attendance summary
-GET    /attendance/my-attendance                # User's attendance
-```
-
-### 🎫 **Certificate Management**
-```
-POST   /certificates/                           # Create certificate
-GET    /certificates/                           # Get all certificates
-GET    /certificates/{id}                       # Get certificate by ID
-PUT    /certificates/{id}                       # Update certificate
-DELETE /certificates/{id}                       # Delete certificate
-POST   /certificates/{id}/issue                 # Issue certificate
-POST   /certificates/{id}/generate              # Generate certificate PDF
-POST   /certificates/bulk-generate              # Bulk generate certificates
-POST   /certificates/verify                     # Verify certificate
-POST   /certificates/templates/                 # Create template
-GET    /certificates/templates/                 # Get all templates
-PUT    /certificates/templates/{id}             # Update template
-DELETE /certificates/templates/{id}             # Delete template
-POST   /certificates/upload-template            # Upload template file
-GET    /certificates/stats/overview             # Certificate statistics
-GET    /certificates/my-certificates            # User's certificates
-```
-
-### 📊 **Data Export**
-```
-GET    /export/statistics/excel                 # Export event statistics to Excel
-GET    /export/statistics/csv                   # Export event statistics to CSV
-GET    /export/participants/excel               # Export participant data to Excel
-GET    /export/participants/csv                 # Export participant data to CSV
-GET    /export/certificates/excel               # Export certificate data to Excel
-GET    /export/certificates/csv                 # Export certificate data to CSV
-```
-```
-
-## 🗄️ Database Schema
-
-### **Core Tables**
-- `users` - User accounts and profiles
-- `roles` - User roles and permissions
-- `refresh_tokens` - JWT refresh tokens
-- `password_reset_tokens` - Password reset functionality
-
-### **Event Management**
-- `events` - Event information and details
-- `event_registrations` - Event registrations
-- `event_likes` - Event likes/reactions
-- `event_comments` - Event comments
-
-### **Attendance System**
-- `attendances` - Attendance records with check-in/out times
-
-### **Certificate System**
-- `certificates` - Certificate records and metadata
-- `certificate_templates` - Certificate templates
-- `certificate_verifications` - Certificate verification logs
-
-## 🔧 Development
-
-### **Project Structure**
-```
-event_organizer_backend/
-├── app/
-│   ├── api/
-│   │   └── v1/
-│   │       └── endpoints/
-│   │           ├── auth.py
-│   │           ├── user.py
-│   │           ├── event.py
-│   │           ├── attendance.py
-│   │           ├── certificate.py
-│   │           └── export.py
-│   ├── core/
-│   │   ├── config.py
-│   │   ├── security.py
-│   │   ├── dependencies.py
-│   │   └── password_validator.py
-│   ├── db/
-│   │   ├── database.py
-│   │   ├── init_db.py
-│   │   └── models/
-│   │       ├── models.py
-│   │       ├── event.py
-│   │       └── certificate.py
-│   ├── schemas/
-│   │   ├── auth.py
-│   │   ├── event.py
-│   │   ├── attendance.py
-│   │   └── certificate.py
-│   ├── services/
-│   │   ├── auth_service.py
-│   │   ├── event_service.py
-│   │   ├── attendance_service.py
-│   │   ├── certificate_service.py
-│   │   ├── email_service.py
-│   │   ├── qr_service.py
-│   │   └── export_service.py
-│   └── main.py
-├── uploads/
-├── requirements.txt
-├── reset_db.py
-├── generate_secret.py
-├── README.md
-├── README_EXPORT.md
-├── README_PASSWORD_VALIDATION.md
-└── examples/
-    ├── export_example.py
-    └── password_validation_test.py
-```
-
-### **Running Tests**
+### Run Test Scripts
 ```bash
-# Install test dependencies
-pip install pytest pytest-asyncio httpx
+# Test session timeout
+python examples/session_timeout_test.py
 
-# Run tests
-pytest
+# Test export functionality
+python examples/export_example.py
+
+# Test password validation
+python examples/password_validation_test.py
+
+# Test time validation
+python examples/time_validation_simple_test.py
 ```
 
-### **Database Migrations**
-```bash
-# Create new migration
-alembic revision --autogenerate -m "Description"
+### API Documentation
+- **Swagger UI**: `http://localhost:8000/docs`
+- **ReDoc**: `http://localhost:8000/redoc`
 
-# Apply migrations
-alembic upgrade head
-```
+## Dokumentasi Tambahan
 
-## 📚 Additional Documentation
+- **[README_EXPORT.md](README_EXPORT.md)** - Dokumentasi fitur export data
+- **[README_PASSWORD_VALIDATION.md](README_PASSWORD_VALIDATION.md)** - Dokumentasi validasi password
+- **[README_TIME_VALIDATION.md](README_TIME_VALIDATION.md)** - Dokumentasi validasi waktu
+- **[README_SESSION_TIMEOUT.md](README_SESSION_TIMEOUT.md)** - Dokumentasi session timeout
 
-### **Data Export System**
-- [README_EXPORT.md](README_EXPORT.md) - Complete guide for data export features
-- Export event statistics, participant data, and certificates
-- Support for Excel (.xlsx) and CSV formats
-- Real-time data processing and file generation
+## Roadmap
 
-### **Password Validation System**
-- [README_PASSWORD_VALIDATION.md](README_PASSWORD_VALIDATION.md) - Comprehensive password validation guide
-- Regex-based password strength validation
-- Real-time password strength checking
-- Common password detection
-- Frontend integration examples
+### ✅ Completed Features
+- [x] Authentication system dengan JWT
+- [x] Role-based access control
+- [x] User management
+- [x] Event management
+- [x] Attendance tracking
+- [x] Certificate management
+- [x] Data export (Excel/CSV)
+- [x] Password strength validation
+- [x] Time-based validations (H-3, H-0)
+- [x] Session timeout system
 
-### **Testing Examples**
-- [examples/export_example.py](examples/export_example.py) - Data export testing script
-- [examples/password_validation_test.py](examples/password_validation_test.py) - Password validation testing script
+### 🚧 In Progress
+- [ ] Mobile responsive interface
+- [ ] Progressive Web App (PWA)
+- [ ] Real-time notifications
+- [ ] Advanced analytics dashboard
 
-## 🚀 Deployment
-1. Set `ENVIRONMENT=production` in `.env`
-2. Use production database (PostgreSQL)
-3. Configure proper SMTP settings
-4. Set secure `SECRET_KEY`
-5. Use reverse proxy (nginx) with SSL
+### 📋 Planned Features
+- [ ] Email templates customization
+- [ ] Bulk operations
+- [ ] API rate limiting
+- [ ] Advanced search dan filtering
+- [ ] Multi-language support
+- [ ] Backup dan restore system
 
-### **Docker Deployment**
-```dockerfile
-FROM python:3.11-slim
+## Contributing
 
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
 
-COPY . .
-EXPOSE 8000
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
+## Support
 
-If you encounter any issues or have questions:
-
-1. Check the [API Documentation](http://localhost:8000/docs)
-2. Review the [Issues](https://github.com/Npppss/BE-Ujikom-EO/issues)
-3. Create a new issue with detailed information
-
-## 🎯 Roadmap
-
-- [x] **Data Export System** ✅
-- [x] **Password Validation** ✅
-- [ ] **Ticket Management System**
-- [ ] **Payment Gateway Integration**
-- [ ] **Push Notification System**
-- [ ] **Real-time Dashboard**
-- [ ] **Event Page Builder**
-- [ ] **Virtual & Hybrid Events**
-- [ ] **Sponsor Management**
-- [ ] **Advanced Analytics**
-- [ ] **Automation & Workflows**
-- [ ] **Internationalization**
-
----
-
-**Made for Event Organizers**
-
-*Built with FastAPI, PostgreSQL, and modern Python practices* 
+Untuk pertanyaan atau dukungan, silakan buat issue di repository ini atau hubungi tim development. 

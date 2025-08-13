@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.schemas.auth import (
@@ -176,4 +176,31 @@ def validate_password(request: PasswordValidationRequest):
         "strength": strength,
         "is_common_password": is_common,
         "requirements": password_validator.get_password_requirements()
+    }
+
+@router.get("/session-status")
+def get_session_status(current_user: User = Depends(get_current_active_user), request: Request = None):
+    """Get current session status and remaining time"""
+    # Get session info from request state (set by middleware)
+    session_info = getattr(request.state, 'session_info', None)
+    
+    if not session_info:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Session information not available"
+        )
+    
+    # Get role-based timeout
+    from app.core.security import get_token_expiration_minutes
+    timeout_minutes = get_token_expiration_minutes(current_user.role.name)
+    
+    return {
+        "user_id": current_user.id,
+        "email": current_user.email,
+        "role": current_user.role.name,
+        "session_timeout_minutes": timeout_minutes,
+        "expires_at": session_info.get("expires_at"),
+        "remaining_seconds": session_info.get("remaining_seconds"),
+        "is_active": current_user.is_active,
+        "is_verified": current_user.is_verified
     }

@@ -1,14 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.endpoints import auth, user, attendance, event, certificate, export
+from app.middleware import SessionTimeoutMiddleware
 
 app = FastAPI(
     title="Event Organizer API",
-    description="A comprehensive event management system with authentication, attendance tracking, and analytics",
+    description="API untuk sistem manajemen event dan sertifikat",
     version="1.0.0"
 )
 
-# CORS middleware
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,6 +17,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add session timeout middleware
+app.add_middleware(SessionTimeoutMiddleware)
 
 # Include routers
 app.include_router(auth.router, prefix="/api/v1")
@@ -27,12 +31,7 @@ app.include_router(export.router, prefix="/api/v1")
 
 @app.get("/")
 def read_root():
-    return {
-        "message": "Event Organizer API",
-        "version": "1.0.0",
-        "docs": "/docs",
-        "redoc": "/redoc"
-    }
+    return {"message": "Event Organizer API", "version": "1.0.0"}
 
 @app.get("/health")
 def health_check():

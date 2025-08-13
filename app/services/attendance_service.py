@@ -9,6 +9,27 @@ class AttendanceService:
     def __init__(self):
         pass
     
+    def can_attend_event(self, event: Event) -> tuple[bool, str]:
+        """
+        Validasi apakah user dapat melakukan daftar hadir
+        Returns: (can_attend, message)
+        """
+        current_datetime = datetime.now()
+        event_datetime = datetime.combine(event.start_date, event.start_time)
+        
+        if current_datetime < event_datetime:
+            return False, f"Check-in/Check-out belum dapat dilakukan. Event dimulai pada {event_datetime.strftime('%d/%m/%Y %H:%M')}"
+        
+        return True, "Event dapat dihadiri"
+    
+    def is_event_ongoing(self, event: Event) -> bool:
+        """Check apakah event sedang berlangsung"""
+        current_datetime = datetime.now()
+        event_start = datetime.combine(event.start_date, event.start_time)
+        event_end = datetime.combine(event.end_date, event.end_time)
+        
+        return event_start <= current_datetime <= event_end
+    
     def start_check_in(self, db: Session, event_id: int) -> bool:
         """Start check-in process for an event"""
         event = db.query(Event).filter(Event.id == event_id).first()
@@ -116,6 +137,13 @@ class AttendanceService:
         if event.check_in_qr_code != qr_code:
             raise Exception("Invalid QR code for this event")
         
+        # Validasi waktu daftar hadir: Check-in hanya dapat dilakukan pada hari H setelah jam event dimulai
+        current_datetime = datetime.now()
+        event_datetime = datetime.combine(event.start_date, event.start_time)
+        
+        if current_datetime < event_datetime:
+            raise Exception(f"Check-in belum dapat dilakukan. Event dimulai pada {event_datetime.strftime('%d/%m/%Y %H:%M')}")
+        
         # Check if user exists
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
@@ -175,6 +203,13 @@ class AttendanceService:
         
         if event.check_out_qr_code != qr_code:
             raise Exception("Invalid QR code for this event")
+        
+        # Validasi waktu daftar hadir: Check-out hanya dapat dilakukan setelah event dimulai
+        current_datetime = datetime.now()
+        event_datetime = datetime.combine(event.start_date, event.start_time)
+        
+        if current_datetime < event_datetime:
+            raise Exception(f"Check-out belum dapat dilakukan. Event dimulai pada {event_datetime.strftime('%d/%m/%Y %H:%M')}")
         
         # Check if user exists
         user = db.query(User).filter(User.id == user_id).first()
