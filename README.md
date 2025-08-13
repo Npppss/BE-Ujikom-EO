@@ -132,7 +132,7 @@ event_organizer_backend/
 
 ### 1. Clone Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/Npppss/BE-Ujikom-EO
 cd event_organizer_backend
 ```
 
