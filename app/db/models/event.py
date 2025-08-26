@@ -98,6 +98,9 @@ class Event(Base):
     likes = relationship("EventLike", back_populates="event", cascade="all, delete-orphan")
     comments = relationship("EventComment", back_populates="event", cascade="all, delete-orphan")
     certificates = relationship("Certificate", back_populates="event", cascade="all, delete-orphan")
+    payments = relationship("Payment", back_populates="event", cascade="all, delete-orphan")
+    tickets = relationship("Ticket", back_populates="event", cascade="all, delete-orphan")
+    notifications = relationship("Notification", back_populates="event", cascade="all, delete-orphan")
 
 class EventRegistration(Base):
     __tablename__ = "event_registrations"
@@ -125,6 +128,7 @@ class EventRegistration(Base):
     # Relationships
     event = relationship("Event", back_populates="registrations")
     user = relationship("User", back_populates="event_registrations")
+    payment = relationship("Payment", back_populates="registration", uselist=False)
 
 class EventLike(Base):
     __tablename__ = "event_likes"

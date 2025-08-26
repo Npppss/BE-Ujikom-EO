@@ -23,10 +23,11 @@ class Settings(BaseSettings):
     # Frontend URL for password reset links
     FRONTEND_URL: str = Field(default="http://localhost:3000", alias="FRONTEND_URL")
 
-    class Config:
-        env_file = ".env"
-        extra = "forbid"
-        allow_population_by_field_name = True
+    model_config = {
+        "env_file": ".env",
+        "extra": "forbid",
+        "validate_by_name": True,
+    }
 
 settings = Settings()
 

@@ -14,3 +14,14 @@ qrcode[pil]
 Pillow
 pandas
 openpyxl
+# Payment System Dependencies
+stripe
+# Real-time Notifications
+websockets
+# Analytics & Caching
+redis
+celery
+# Enhanced Security
+python-multipart
+# Additional Utilities
+python-dateutil
