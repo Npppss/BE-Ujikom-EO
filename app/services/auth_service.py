@@ -30,16 +30,16 @@ class AuthService:
         verification_token = secrets.token_urlsafe(32)
         verification_expires = datetime.utcnow() + timedelta(hours=24)
         
-        # Create new user (not verified initially)
+        # Create new user (verified for testing - bypass email verification)
         hashed_password = get_password_hash(password)
         new_user = User(
             email=email,
             hashed_password=hashed_password,
             full_name=full_name,
             role_id=default_role.id,
-            is_verified=False,  # User needs to verify email first
-            email_verification_token=verification_token,
-            email_verification_expires=verification_expires
+            is_verified=True,  # Auto-verify for testing
+            email_verification_token=None,
+            email_verification_expires=None
         )
         
         db.add(new_user)

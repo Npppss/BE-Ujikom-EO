@@ -46,8 +46,6 @@ class User(Base):
     event_comments = relationship("EventComment", back_populates="user", cascade="all, delete-orphan")
     certificates = relationship("Certificate", back_populates="user", cascade="all, delete-orphan")
     payments = relationship("Payment", back_populates="user", cascade="all, delete-orphan")
-    discount_code_usages = relationship("DiscountCodeUsage", back_populates="user", cascade="all, delete-orphan")
-    processed_refunds = relationship("Refund", back_populates="processor", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
     notification_preferences = relationship("NotificationPreference", back_populates="user", cascade="all, delete-orphan", uselist=False)
 

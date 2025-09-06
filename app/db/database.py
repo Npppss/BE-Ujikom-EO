@@ -5,7 +5,7 @@ from fastapi import Depends
 import os
 from dotenv import load_dotenv
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:12345678@database-ujikom.cax0e00wk2uu.us-east-1.rds.amazonaws.com:5432/event_organizer")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:12345678@ujikom-1.cax0e00wk2uu.us-east-1.rds.amazonaws.com:5432/event_organizer")
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

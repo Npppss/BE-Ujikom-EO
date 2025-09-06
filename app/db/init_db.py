@@ -213,6 +213,11 @@ def init_db():
             admin_role = db.query(Role).filter(Role.name == "admin").first()
             organizer_role = db.query(Role).filter(Role.name == "organizer").first()
             user_role = db.query(Role).filter(Role.name == "user").first()
+            
+            # If roles don't exist, create them
+            if not admin_role or not organizer_role or not user_role:
+                print("Some roles missing, creating all roles...")
+                admin_role, organizer_role, user_role = create_default_roles(db)
         
         # Check if admin user already exists
         existing_admin = db.query(User).filter(User.email == "admin@eventorganizer.com").first()
@@ -271,4 +276,4 @@ def init_db():
         db.close()
 
 if __name__ == "__main__":
-    init_db() 
+    init_db()

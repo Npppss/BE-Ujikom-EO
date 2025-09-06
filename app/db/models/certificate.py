@@ -61,6 +61,7 @@ class Certificate(Base):
     user = relationship("User", back_populates="certificates")
     template = relationship("CertificateTemplate", back_populates="certificates")
     verifications = relationship("CertificateVerification", back_populates="certificate")
+    notifications = relationship("Notification", back_populates="certificate", cascade="all, delete-orphan")
 
 class CertificateTemplate(Base):
     __tablename__ = "certificate_templates"

@@ -79,6 +79,7 @@ class Notification(Base):
     event = relationship("Event", back_populates="notifications")
     payment = relationship("Payment", back_populates="notifications")
     certificate = relationship("Certificate", back_populates="notifications")
+    logs = relationship("NotificationLog", back_populates="notification", cascade="all, delete-orphan")
 
 class NotificationTemplate(Base):
     __tablename__ = "notification_templates"
